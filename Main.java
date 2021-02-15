@@ -26,7 +26,7 @@ public class Main {
     public static double MIN_FACTOR;
 
     public static void setSetting(File file) {
-        if (file.exists()) {
+        if (file!=null&&file.exists()) {
             ArrayList<String> lines = (ArrayList<String>) readFileIntoLines(file);
             for (int i = 0; i < lines.size(); i++) {
                 if (lines.get(i).contains("MAX_R")) {
@@ -56,7 +56,10 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        File file = new File("setting.txt");
+        File file =null;
+        if(args.length!=0) {
+            file = new File(args[0]);
+        }
         setSetting(file);
 
         Sleeper sleeper = new Sleeper();
