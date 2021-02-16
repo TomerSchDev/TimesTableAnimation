@@ -1,10 +1,5 @@
-import biuoop.DrawSurface;
-import biuoop.GUI;
-import biuoop.Sleeper;
-import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,20 +8,59 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Main.
+ */
 public class Main {
+    /**
+     * The constant WIDTH.
+     */
     public static int WIDTH = 600;
+    /**
+     * The constant HEIGHT.
+     */
     public static int HEIGHT = 600;
+    /**
+     * The constant TranslateToCenter.
+     */
     public static int TranslateToCenter = (WIDTH / 2) + 1;
+    /**
+     * The constant FPS.
+     */
+    public static int FPS=30;
 
+    /**
+     * The constant MAX_R.
+     */
     public static int MAX_R;
+    /**
+     * The constant MIN_R.
+     */
     public static int MIN_R;
+    /**
+     * The constant MAX_POINTS.
+     */
     public static int MAX_POINTS;
+    /**
+     * The constant MIN_POINTS.
+     */
     public static int MIN_POINTS;
+    /**
+     * The constant MAX_FACTOR.
+     */
     public static double MAX_FACTOR;
+    /**
+     * The constant MIN_FACTOR.
+     */
     public static double MIN_FACTOR;
 
+    /**
+     * Sets setting.
+     *
+     * @param file the file
+     */
     public static void setSetting(File file) {
-        if (file!=null&&file.exists()) {
+        if (file.exists()) {
             ArrayList<String> lines = (ArrayList<String>) readFileIntoLines(file);
             for (int i = 0; i < lines.size(); i++) {
                 if (lines.get(i).contains("MAX_R")) {
@@ -50,39 +84,30 @@ public class Main {
             MIN_R = 50;
             MAX_POINTS = 1000;
             MIN_POINTS = 200;
-            MAX_FACTOR = 15;
-            MIN_FACTOR = 1;
+            MAX_FACTOR = 10;
+            MIN_FACTOR = 0.5;
         }
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
-        File file =null;
-        if(args.length!=0) {
-            file = new File(args[0]);
-        }
+        File file = new File("setting.txt");
         setSetting(file);
-
-        Sleeper sleeper = new Sleeper();
-        GUI gui = new GUI("Times Table", WIDTH, HEIGHT);
-        Table table = new Table(MIN_R, MIN_POINTS, MIN_FACTOR);
-        int FPS = 10;
-        long MS_PF = 1000 / FPS;
-        while (true) {
-            long start = System.currentTimeMillis();
-            DrawSurface drawSurface = gui.getDrawSurface();
-            drawSurface.setColor(Color.BLACK);
-            drawSurface.fillRectangle(0, 0, WIDTH, HEIGHT);
-            table.updateTable();
-            table.drawTable(drawSurface);
-            gui.show(drawSurface);
-            long end = System.currentTimeMillis();
-            long work = end - start;
-            if (work < MS_PF) {
-                sleeper.sleepFor(MS_PF - work);
-            }
-        }
+        Display display = new Display(WIDTH, HEIGHT,"Times Table");
+        display.run();
     }
 
+    /**
+     * Read file into lines list.
+     *
+     * @param file the file
+     *
+     * @return the list
+     */
     public static List<String> readFileIntoLines(File file) {
         InputStream inputStream = null;
         List<String> lines = new ArrayList<>();

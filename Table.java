@@ -1,21 +1,53 @@
-import biuoop.DrawSurface;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.Vector;
 
+/**
+ * The type Table.
+ */
 public class Table {
-    //the radios of the circle
+    /**
+     * The Radios.
+     */
+//the radios of the circle
     private int radios;
-    //the number of points in the table
+    /**
+     * The Num points.
+     */
+//the number of points in the table
     private int numPoints;
-    //the times factor to the lines
+    /**
+     * The Times factor.
+     */
+//the times factor to the lines
     private double timesFactor;
-    /*
+    /**
+     * The To add points.
+     */
+/*
         the checks for the setting;
      */
     private boolean toAddPoints;
+    /**
+     * The To grow radios.
+     */
     private boolean toGrowRadios;
+    /**
+     * The To grow factor.
+     */
     private boolean toGrowFactor;
+    /**
+     * The Ticks.
+     */
+    private int ticks;
 
+    /**
+     * Instantiates a new Table.
+     *
+     * @param radios      the radios
+     * @param numPoints   the num points
+     * @param timesFactor the times factor
+     */
     public Table(int radios, int numPoints, double timesFactor) {
         this.radios = radios;
         this.numPoints = numPoints;
@@ -23,9 +55,13 @@ public class Table {
         this.toAddPoints = true;
         this.toGrowRadios = true;
         this.toGrowFactor = true;
+        this.ticks = 0;
     }
 
-    public void updateTable() {
+    /**
+     * Update time factor.
+     */
+    private void updateTimeFactor() {
         if (this.timesFactor <= Main.MIN_FACTOR) {
             this.toGrowFactor = true;
         }
@@ -33,10 +69,16 @@ public class Table {
             this.toGrowFactor = true;
         }
         if (this.toGrowFactor) {
-            this.timesFactor += 0.1;
+            this.timesFactor +=0.01;
         } else {
-            this.timesFactor -= 0.1;
+            this.timesFactor -= 0.01;
         }
+    }
+
+    /**
+     * Update num points.
+     */
+    private void updateNumPoints() {
         if (this.numPoints <= Main.MIN_POINTS) {
             this.toAddPoints = true;
         }
@@ -48,6 +90,12 @@ public class Table {
         } else {
             this.numPoints--;
         }
+    }
+
+    /**
+     * Update grow radios.
+     */
+    private void updateGrowRadios() {
         if (this.radios > Main.MAX_R) {
             this.toGrowRadios = false;
         }
@@ -61,6 +109,25 @@ public class Table {
         }
     }
 
+    /**
+     * Update table.
+     */
+    public void updateTable() {
+        if(ticks%Main.FPS==0){
+            updateNumPoints();
+        }
+        updateTimeFactor();
+        updateGrowRadios();
+        ticks++;
+    }
+
+    /**
+     * Gets vector from index.
+     *
+     * @param index the index
+     *
+     * @return the vector from index
+     */
     private Vector getVectorFromIndex(double index) {
         double angle = (index * (2 * Math.PI / this.numPoints)) + Math.PI;
         double x = this.radios * Math.cos(angle) + Main.TranslateToCenter;
@@ -71,18 +138,21 @@ public class Table {
         return v;
     }
 
-    public void drawTable(DrawSurface drawSurface) {
-        drawSurface.setColor(Color.WHITE);
-        drawSurface.drawCircle(Main.WIDTH / 2, Main.HEIGHT / 2, this.radios);
+    /**
+     * Render.
+     *
+     * @param graphics the graphics
+     */
+    public void render(Graphics graphics) {
+        graphics.setColor(Color.WHITE);
         for (int i = 0; i < this.numPoints; i++) {
-            drawSurface.setColor(Color.WHITE);
             Vector a = getVectorFromIndex(i);
             Vector b = getVectorFromIndex(i * timesFactor);
             Double x1 = (Double) a.get(0);
             Double y1 = (Double) a.get(1);
             Double x2 = (Double) b.get(0);
             Double y2 = (Double) b.get(1);
-            drawSurface.drawLine(x1.intValue(), y1.intValue(), x2.intValue(), y2.intValue());
+            graphics.drawLine(x1.intValue(), y1.intValue(), x2.intValue(), y2.intValue());
         }
     }
 }
